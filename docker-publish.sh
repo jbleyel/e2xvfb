@@ -1,4 +1,4 @@
 #!/bin/bash
 VERSION=latest
-docker build . -t technic93/e2xvfb:${VERSION}
-docker push technic93/e2xvfb:${VERSION}
+docker build . -t jbleyel/e2xvfbatv:${VERSION}
+docker push jbleyel/e2xvfbatv:${VERSION}
