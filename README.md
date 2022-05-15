@@ -19,9 +19,11 @@ docker stop enigma2_box
 ```
 We also support `RESOLUTION` environment variable for Xvfb.
 
-# TODO:
-* opkg not found
-* libc.6.so not found
-* Python 3.8 and 3.9
+# Environment
 * Ubuntu 22.04
+* openATV enigma2 branch 7.0
+* Python 3.10
+* default and MetrixHD skin
+
+# TODO:
 * ssh not working

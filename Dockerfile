@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Berlin
@@ -9,8 +9,8 @@ RUN apt install -y tzdata
 
 # build requirements
 RUN apt-get update && apt-get install -y \
-  git g++-11 build-essential autoconf autotools-dev libtool libtool-bin unzip \
-  swig python3.9-dev python3-pip python3-twisted \
+  git g++-11 build-essential autoconf autotools-dev gettext libtool libtool-bin unzip \
+  swig python3.10-dev python3-pip python3-twisted \
   python3-netifaces python3-usb python3-requests \
   libz-dev libssl-dev \
   libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libsigc++-2.0-dev \
@@ -21,6 +21,11 @@ RUN apt-get update && apt-get install -y \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
  && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+
+RUN rm /usr/bin/python3 && ln -sf /usr/bin/python3.10 /usr/bin/python3
+RUN rm /usr/bin/pygettext3 && ln -sf /usr/bin/pygettext3.10 /usr/bin/pygettext3
+RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.10 /usr/bin/pydoc3
+RUN rm /usr/bin/python3-config && ln -sf /usr/bin/python3.10-config /usr/bin/python3-config
 
 ENV PYTHON_VERSION=3.9
 
@@ -33,7 +38,7 @@ RUN curl -L "http://git.yoctoproject.org/cgit/cgit.cgi/opkg/snapshot/opkg-$OPKG_
 RUN tar -xzf opkg.tar.gz \
  && cd "opkg-$OPKG_VER" \
  && ./autogen.sh \
- && ./configure --enable-curl --enable-ssl-curl --enable-gpg \
+ && ./configure --enable-curl --enable-ssl-curl --enable-gpg --prefix=/usr --sysconfdir=/etc \
  && make \
  && make install
 
@@ -69,20 +74,35 @@ COPY enigma2-settings /etc/enigma2/settings
 RUN ldconfig
 
 RUN git clone --depth 10 https://github.com/oe-mirrors/branding-module.git
+COPY ax_python_devel.m4 branding-module/m4/ax_python_devel.m4
 RUN cd branding-module \
  && autoreconf -i \
- && ./configure --prefix=/usr --with-imageversion="7.0" \
+ && ./configure --prefix=/usr --with-imageversion="7.1" \
  && make \
  && make install
 
 RUN git clone --depth 1 https://github.com/openatv/MetrixHD.git -b dev
-RUN cd MetrixHD && cp -arv usr / && rm -r /usr/lib/enigma2/python/Plugins/Extensions/MyMetrixLite
+RUN cd MetrixHD && cp -arv usr /
+# && rm -r /usr/lib/enigma2/python/Plugins/Extensions/MyMetrixLite
+
+RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-e2-skindefault.git
+RUN cd oe-alliance-e2-skindefault && cp -arv fonts /usr/share/ && cp -arv skin_default /usr/share/enigma2/ && cp -arv skin_fallback_1080 /usr/share/enigma2/ && cp skin*.xml /usr/share/enigma2/ && cp prev.png /usr/share/enigma2/
 
 COPY enigma.info /usr/lib/enigma.info
 
-COPY process.py /usr/lib/python3.8/site-packages/process.py
+COPY process.py /usr/lib/python3.10/site-packages/process.py
 
-COPY process.py /usr/lib/python3.9/site-packages/process.py
+# OPKG
+RUN mkdir -p /etc/opkg && mkdir -p /var/lib/opkg/lists && mkdir -p /var/lib/opkg/info
+RUN echo "dest root /" > /etc/opkg/opkg.conf
+RUN echo "option lists_dir /var/lib/opkg/lists" >> /etc/opkg/opkg.conf
+RUN echo "arch all 1" > /etc/opkg/arch.conf
+RUN echo "arch any 6" >> /etc/opkg/arch.conf
+RUN echo "arch noarch 11" >> /etc/opkg/arch.conf
+RUN echo "src/gz openatv-all http://feeds2.mynonpublic.com/7.1/vusolo4k/all" >> /etc/opkg/all-feed.conf
+
+COPY opkg.py /work/opkg.py
+RUN python opkg.py
 
 COPY entrypoint.sh /opt
 RUN chmod 755 /opt/entrypoint.sh
