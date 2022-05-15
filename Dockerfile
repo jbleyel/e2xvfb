@@ -56,6 +56,8 @@ RUN cd tuxtxt/tuxtxt \
  && make \
  && make install
 
+ENV base_libdir=/usr/lib
+
 RUN git clone --depth 1 https://github.com/openatv/enigma2.git
 RUN cd enigma2 \
  && ./autogen.sh \
