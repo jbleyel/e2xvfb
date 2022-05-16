@@ -27,7 +27,7 @@ RUN rm /usr/bin/pygettext3 && ln -sf /usr/bin/pygettext3.10 /usr/bin/pygettext3
 RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.10 /usr/bin/pydoc3
 RUN rm /usr/bin/python3-config && ln -sf /usr/bin/python3.10-config /usr/bin/python3-config
 
-RUN pip3 install wifi
+RUN pip3 install wifi Cheetah3 pillow
 
 WORKDIR /work
 
@@ -94,6 +94,7 @@ RUN cp /usr/include/tirpc/netconfig.h /usr/include/
 # enigma2-plugins
 RUN git clone --depth 1 https://github.com/oe-alliance/enigma2-plugins.git
 COPY ax_python_devel.m4 enigma2-plugins/m4/ax_python_devel.m4
+COPY Makefile-enigma2-plugins.am enigma2-plugins/Makefile.am
 RUN cd enigma2-plugins \
  && sed -i '/PKG_CHECK_MODULES(ENIGMA2, enigma2)/d' ./configure.ac \
  && sed -i '/PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)/d' ./configure.ac \
@@ -105,6 +106,7 @@ RUN cd enigma2-plugins \
 # oe-alliance-plugins
 RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-plugins.git
 COPY ax_python_devel.m4 oe-alliance-plugins/m4/ax_python_devel.m4
+COPY Makefile-oe-alliance-plugins.am oe-alliance-plugins/Makefile.am
 RUN cd oe-alliance-plugins \
  && autoreconf -i \
  && ./configure --prefix=/usr \
@@ -138,6 +140,8 @@ RUN python opkg.py
 
 RUN if [ -f /usr/lib32/libc.so.6 ]; then ln -snf /usr/lib32/libc.so.6 /usr/lib/libc.so.6; fi
 RUN if [ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ]; then ln -snf /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/libc.so.6; fi
+
+RUN rm -rf /work/*
 
 COPY entrypoint.sh /opt
 RUN chmod 755 /opt/entrypoint.sh
