@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
   libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libsigc++-2.0-dev \
   libfreetype6-dev libfribidi-dev \
   libavahi-client-dev libjpeg-dev libgif-dev libsdl2-dev libxml2-dev \
-  libarchive-dev libcurl4-openssl-dev libgpgme11-dev \
+  libarchive-dev libcurl4-openssl-dev libgpgme11-dev libntirpc-dev \
   x11vnc xvfb xdotool nginx ssh curl
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
@@ -26,8 +26,6 @@ RUN rm /usr/bin/python3 && ln -sf /usr/bin/python3.10 /usr/bin/python3
 RUN rm /usr/bin/pygettext3 && ln -sf /usr/bin/pygettext3.10 /usr/bin/pygettext3
 RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.10 /usr/bin/pydoc3
 RUN rm /usr/bin/python3-config && ln -sf /usr/bin/python3.10-config /usr/bin/python3-config
-
-ENV PYTHON_VERSION=3.9
 
 RUN pip3 install wifi
 
@@ -45,7 +43,7 @@ RUN tar -xzf opkg.tar.gz \
 RUN git clone --depth 1 https://github.com/oe-alliance/libdvbsi.git
 RUN cd libdvbsi \
  && ./autogen.sh \
- && ./configure \
+ && ./configure --prefix=/usr \
  && make \
  && make install
 
@@ -88,6 +86,39 @@ RUN cd MetrixHD && cp -arv usr /
 RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-e2-skindefault.git
 RUN cd oe-alliance-e2-skindefault && cp -arv fonts /usr/share/ && cp -arv skin_default /usr/share/enigma2/ && cp -arv skin_fallback_1080 /usr/share/enigma2/ && cp skin*.xml /usr/share/enigma2/ && cp prev.png /usr/share/enigma2/
 
+
+# rpc error
+RUN cp /usr/include/tirpc/rpc/* /usr/include/rpc/
+RUN cp /usr/include/tirpc/netconfig.h /usr/include/
+
+# enigma2-plugins
+RUN git clone --depth 1 https://github.com/oe-alliance/enigma2-plugins.git
+COPY ax_python_devel.m4 enigma2-plugins/m4/ax_python_devel.m4
+RUN cd enigma2-plugins \
+ && sed -i '/PKG_CHECK_MODULES(ENIGMA2, enigma2)/d' ./configure.ac \
+ && sed -i '/PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)/d' ./configure.ac \
+ && autoreconf -i \
+ && ./configure --prefix=/usr --without-debug --with-po \
+ && make \
+ && make install
+
+# oe-alliance-plugins
+RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-plugins.git
+COPY ax_python_devel.m4 oe-alliance-plugins/m4/ax_python_devel.m4
+RUN cd oe-alliance-plugins \
+ && autoreconf -i \
+ && ./configure --prefix=/usr \
+ && make \
+ && make install
+
+
+# OWI
+RUN git clone --depth 1 https://github.com/E2OpenPlugins/e2openplugin-OpenWebif.git
+COPY OWI.sh e2openplugin-OpenWebif/OWI.sh
+RUN cd e2openplugin-OpenWebif \  
+ && chmod 755 OWI.sh \
+ && ./OWI.sh
+
 COPY enigma.info /usr/lib/enigma.info
 
 COPY process.py /usr/lib/python3.10/site-packages/process.py
@@ -100,13 +131,17 @@ RUN echo "arch all 1" > /etc/opkg/arch.conf
 RUN echo "arch any 6" >> /etc/opkg/arch.conf
 RUN echo "arch noarch 11" >> /etc/opkg/arch.conf
 RUN echo "src/gz openatv-all http://feeds2.mynonpublic.com/7.1/vusolo4k/all" >> /etc/opkg/all-feed.conf
+RUN echo "src/gz oe-alliance-settings-feed https://raw.githubusercontent.com/oe-alliance/oe-alliance-settings-feed/master/feed" >> /etc/opkg/oe-alliance-settings-feed.conf
 
 COPY opkg.py /work/opkg.py
 RUN python opkg.py
 
+RUN if [ -f /usr/lib32/libc.so.6 ]; then ln -snf /usr/lib32/libc.so.6 /usr/lib/libc.so.6; fi
+RUN if [ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ]; then ln -snf /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/libc.so.6; fi
+
 COPY entrypoint.sh /opt
 RUN chmod 755 /opt/entrypoint.sh
 ENV DISPLAY=:99
-EXPOSE 5900 80
+EXPOSE 5900 80 22
 ENTRYPOINT ["/opt/entrypoint.sh"]
 CMD bash

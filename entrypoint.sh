@@ -5,10 +5,6 @@ set -e
 mkdir -p /dev/input
 touch /dev/.udev
 
-[ -f /usr/lib32/libc.so.6 ] && ln -snf /usr/lib32/libc.so.6 /usr/lib/libc.so.6
-
-[ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ] && ln -snf /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/libc.so.6
-
 # start web server
 service nginx start
 
