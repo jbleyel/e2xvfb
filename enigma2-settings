@@ -3,3 +3,4 @@ config.misc.languageselected=false
 config.misc.videowizardenabled=false
 config.misc.initialchannelselection=false
 config.misc.do_overscanwizard=false
+config.OpenWebif.port=81

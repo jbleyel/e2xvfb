@@ -6,7 +6,6 @@ SUBDIRS = \
 	audiosync \
 	automaticcleanup \
 	autotimer \
-	babelzapper \
 	birthdayreminder \
 	bonjour \
 	cdinfo \
@@ -14,12 +13,10 @@ SUBDIRS = \
 	curlytx \
 	dreamexplorer \
 	dreammediathek \
-	easyinfo \
 	easymedia \
 	ecasa \
 	eibox \
 	emailclient \
-	emission \
 	eparted \
 	epgrefresh \
 	eurotictv \
@@ -34,12 +31,8 @@ SUBDIRS = \
 	growlee \
 	imdb \
 	infobartunerstate \
-	kiddytimer \
 	letterbox \
 	mediadownloader \
-	merlinepg \
-	merlinepgcenter \
-	merlinmusicplayer \
 	mosaic \
 	moviecut \
 	movieretitle \
@@ -57,7 +50,6 @@ SUBDIRS = \
 	pipservicerelation \
 	podcast \
 	porncenter \
-	pushservice \
 	quickbutton \
 	reconstructapsc \
 	reftopiconname \
@@ -70,14 +62,12 @@ SUBDIRS = \
 	simplerss \
 	startuptostandby \
 	subsdownloader2 \
-	svdrp \
 	tageditor \
 	teletext \
 	toolkit \
 	tvcharts \
 	unwetterinfo \
 	valixdcontrol \
-	videocolorspace \
 	vlcplayer \
 	vps \
 	weatherplugin \

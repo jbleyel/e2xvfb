@@ -27,7 +27,7 @@ RUN rm /usr/bin/pygettext3 && ln -sf /usr/bin/pygettext3.10 /usr/bin/pygettext3
 RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.10 /usr/bin/pydoc3
 RUN rm /usr/bin/python3-config && ln -sf /usr/bin/python3.10-config /usr/bin/python3-config
 
-RUN pip3 install wifi Cheetah3 pillow
+RUN pip3 install wifi Cheetah3 pillow treq
 
 WORKDIR /work
 
@@ -129,6 +129,7 @@ COPY process.py /usr/lib/python3.10/site-packages/process.py
 RUN mkdir -p /etc/opkg && mkdir -p /var/lib/opkg/lists && mkdir -p /var/lib/opkg/info
 RUN echo "dest root /" > /etc/opkg/opkg.conf
 RUN echo "option lists_dir /var/lib/opkg/lists" >> /etc/opkg/opkg.conf
+RUN echo "option status_file /var/lib/opkg/status" >> /etc/opkg/opkg.conf
 RUN echo "arch all 1" > /etc/opkg/arch.conf
 RUN echo "arch any 6" >> /etc/opkg/arch.conf
 RUN echo "arch noarch 11" >> /etc/opkg/arch.conf
@@ -146,6 +147,6 @@ RUN rm -rf /work/*
 COPY entrypoint.sh /opt
 RUN chmod 755 /opt/entrypoint.sh
 ENV DISPLAY=:99
-EXPOSE 5900 80 22
+EXPOSE 5900 80 81 21 22
 ENTRYPOINT ["/opt/entrypoint.sh"]
 CMD bash
