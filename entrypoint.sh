@@ -9,7 +9,7 @@ touch /dev/.udev
 /usr/sbin/sshd -D &
 
 # start ftp
-start-stop-daemon -S -b -x /usr/sbin/vsftpd -- /etc/vsftpd/vsftpd.conf
+start-stop-daemon -S -b -x /usr/sbin/vsftpd -- /etc/vsftpd.conf
 
 # start web server
 service nginx start

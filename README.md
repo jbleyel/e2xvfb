@@ -19,6 +19,18 @@ docker stop enigma2_box
 ```
 We also support `RESOLUTION` environment variable for Xvfb.
 
+To allow ftp you need to add:
+```
+-p 21:21 -p 20:20 -p 21100-21110:21100-21110 
+```
+to docker run command.
+
+To allow ssh you need to add:
+```
+-p 22:22
+```
+to docker run command.
+
 # Environment
 * Ubuntu 22.04
 * openATV enigma2 branch 7.0
