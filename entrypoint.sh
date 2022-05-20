@@ -5,6 +5,12 @@ set -e
 mkdir -p /dev/input
 touch /dev/.udev
 
+# start sshd
+/usr/sbin/sshd -D &
+
+# start ftp
+start-stop-daemon -S -b -x /usr/sbin/vsftpd -- /etc/vsftpd/vsftpd.conf
+
 # start web server
 service nginx start
 

@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
   libfreetype6-dev libfribidi-dev \
   libavahi-client-dev libjpeg-dev libgif-dev libsdl2-dev libxml2-dev \
   libarchive-dev libcurl4-openssl-dev libgpgme11-dev libntirpc-dev \
-  x11vnc xvfb xdotool nginx ssh curl
+  x11vnc xvfb xdotool nginx openssh-server curl vsftpd nano
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
  && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
@@ -143,6 +143,17 @@ RUN if [ -f /usr/lib32/libc.so.6 ]; then ln -snf /usr/lib32/libc.so.6 /usr/lib/l
 RUN if [ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ]; then ln -snf /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/libc.so.6; fi
 
 RUN rm -rf /work/*
+
+# SSH
+RUN mkdir /var/run/sshd
+RUN echo 'root:docker' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+RUN echo 'export NOTVISIBLE="in users profile"' >> ~/.bashrc
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+# FTP
+COPY vsftpd.conf /etc/
 
 COPY entrypoint.sh /opt
 RUN chmod 755 /opt/entrypoint.sh
