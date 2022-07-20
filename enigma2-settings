@@ -1,6 +1,9 @@
-config.misc.firstrun=false
-config.misc.languageselected=false
-config.misc.videowizardenabled=false
-config.misc.initialchannelselection=false
-config.misc.do_overscanwizard=false
-config.OpenWebif.port=81
+config.misc.firstrun=False
+config.misc.languageselected=False
+config.misc.videowizardenabled=False
+config.misc.initialchannelselection=False
+config.misc.do_overscanwizard=False
+config.OpenWebif.port=81config.av.videomode.HDMI=1080p
+config.av.videorate.1080p=auto
+config.plugins.MyMetrixLiteOther.EHDtested=dm800_|_1
+config.plugins.MyMetrixLiteOther.EHDenabled=0

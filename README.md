@@ -37,5 +37,3 @@ to docker run command.
 * Python 3.10
 * default and MetrixHD skin
 
-# TODO:
-* ssh not working

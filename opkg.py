@@ -38,6 +38,36 @@ Source: enigma2.bb
 
 lists += ctl
 
+pack += """Package: enigma2-plugin-skins-metrix-atv-fhd-icons
+Version: 7.1
+Depends: enigma2
+Status: install ok installed
+Architecture: all
+Installed-Size: 186628
+Installed-Time: 1652135548
+Auto-Installed: yes
+
+"""
+
+ctl = """Package: enigma2-plugin-skins-metrix-atv-fhd-icons
+Version: 7.1
+Description: enigma2-plugin-skins-metrix-atv-fhd-icons
+ enigma2-plugin-skins-metrix-atv-fhd-icons
+Section: base
+Priority: optional
+Maintainer: OE-Alliance
+License: GPLv2
+Architecture: all
+OE: enigma2
+Depends: enigma2
+Source: enigma2.bb
+
+"""
+
+with open("/var/lib/opkg/info/enigma2-plugin-skins-metrix-atv-fhd-icons.control", "w") as fd:
+	fd.write(ctl)
+	fd.flush()
+
 with open("/var/lib/opkg/status", "w") as fd:
 	fd.write(pack)
 	fd.flush()

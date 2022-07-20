@@ -17,7 +17,11 @@ RUN apt-get update && apt-get install -y \
   libfreetype6-dev libfribidi-dev \
   libavahi-client-dev libjpeg-dev libgif-dev libsdl2-dev libxml2-dev \
   libarchive-dev libcurl4-openssl-dev libgpgme11-dev libntirpc-dev \
-  x11vnc xvfb xdotool nginx openssh-server curl vsftpd nano
+  x11vnc xvfb xdotool nginx openssh-server curl vsftpd nano locales iputils-ping net-tools
+
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
  && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
@@ -27,7 +31,7 @@ RUN rm /usr/bin/pygettext3 && ln -sf /usr/bin/pygettext3.10 /usr/bin/pygettext3
 RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.10 /usr/bin/pydoc3
 RUN rm /usr/bin/python3-config && ln -sf /usr/bin/python3.10-config /usr/bin/python3-config
 
-RUN pip3 install wifi Cheetah3 pillow treq
+RUN pip3 install wifi Cheetah3 pillow treq scalene
 
 WORKDIR /work
 
@@ -83,8 +87,13 @@ RUN git clone --depth 1 https://github.com/openatv/MetrixHD.git -b dev
 RUN cd MetrixHD && cp -arv usr /
 # && rm -r /usr/lib/enigma2/python/Plugins/Extensions/MyMetrixLite
 
+#default skin
 RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-e2-skindefault.git
 RUN cd oe-alliance-e2-skindefault && cp -arv fonts /usr/share/ && cp -arv skin_default /usr/share/enigma2/ && cp -arv skin_fallback_1080 /usr/share/enigma2/ && cp skin*.xml /usr/share/enigma2/ && cp prev.png /usr/share/enigma2/
+
+#overlayhd
+RUN git clone --depth 1 https://github.com/IanSav/OverlayHD.git
+RUN cd OverlayHD && cp -arv usr /
 
 
 # rpc error
@@ -139,18 +148,19 @@ RUN echo "src/gz oe-alliance-settings-feed https://raw.githubusercontent.com/oe-
 COPY opkg.py /work/opkg.py
 RUN python opkg.py
 
-RUN if [ -f /usr/lib32/libc.so.6 ]; then ln -snf /usr/lib32/libc.so.6 /usr/lib/libc.so.6; fi
-RUN if [ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ]; then ln -snf /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/libc.so.6; fi
+RUN if [ -f /usr/lib32/libc.so.6 ]; then ln -snf /usr/lib32/libc.so.6 /usr/lib/libc.so.6 && chmod 755 /usr/lib32/libc.so.6; fi
+RUN if [ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ]; then ln -snf /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/libc.so.6 && chmod 755 /usr/lib/aarch64-linux-gnu/libc.so.6; fi
 
 RUN rm -rf /work/*
 
 # SSH
 RUN mkdir /var/run/sshd
 RUN echo 'root:docker' | chpasswd
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 RUN echo 'export NOTVISIBLE="in users profile"' >> ~/.bashrc
 RUN echo "export VISIBLE=now" >> /etc/profile
+RUN bash -c 'install -m755 <(printf "#!/bin/sh\nexit 0") /usr/sbin/policy-rc.d'
 
 # FTP
 COPY vsftpd.conf /etc/
