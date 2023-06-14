@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = ABMCustomMixImporter AboutBoxBranding ChannelsImporter DLNABrowser DLNAServer EPGTranslator Fempa OnDemand RemoteChannelStreamConverter SatipClient StreamTV tmdb TunerServer xmlUpdate Chefkoch PiconsUpdater TVSpielfilm
+SUBDIRS = ABMCustomMixImporter AboutBoxBranding ChannelsImporter DLNABrowser DLNAServer EPGTranslator Fempa RemoteChannelStreamConverter SatipClient StreamTV tmdb TunerServer xmlUpdate Chefkoch PiconsUpdater TVSpielfilm LottoExtended
 
 SUBDIRS += PiconManager

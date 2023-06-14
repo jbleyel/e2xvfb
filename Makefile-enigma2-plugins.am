@@ -10,7 +10,6 @@ SUBDIRS = \
 	bonjour \
 	cdinfo \
 	channelselectionshorttitle \
-	curlytx \
 	dreamexplorer \
 	dreammediathek \
 	easymedia \
@@ -24,10 +23,8 @@ SUBDIRS = \
 	eventposition \
 	filebrowser \
 	flashexpander \
-	fritzcall \
 	fstabeditor \
 	ftpbrowser \
-	googlemaps \
 	growlee \
 	imdb \
 	infobartunerstate \
@@ -40,40 +37,25 @@ SUBDIRS = \
 	movietagger \
 	mphelp \
 	multirc \
-	ncidclient \
 	netcaster \
-	ofdb \
 	orfat \
 	orfteletext \
 	partnerbox \
-	permanentclock \
 	pipservicerelation \
-	podcast \
-	porncenter \
 	quickbutton \
 	reconstructapsc \
 	reftopiconname \
-	remotetimer \
-	rsdownloader \
 	seriesplugin \
 	setpasswd \
-	shoutcast \
 	showclock \
 	simplerss \
 	startuptostandby \
 	subsdownloader2 \
 	tageditor \
-	teletext \
 	toolkit \
-	tvcharts \
 	unwetterinfo \
 	valixdcontrol \
 	vlcplayer \
-	vps \
-	weatherplugin \
-	weathercomponent \
-	weathercomponenthandler \
-	webcamviewer \
 	werbezapper \
 	zaphistorybrowser \
 	zapstatistic \
@@ -81,10 +63,29 @@ SUBDIRS = \
 	esame \
 	schiffe \
 	sudoku \
+	bmediacenter \
 	vierg
 
+#	curlytx
+#	fritzcall
+#	googlemaps
+#	ncidclient
+#	ofdb
+#	porncenter
+#	rsdownloader
+#	tvcharts
+#	webcamviewer
+#	shoutcast
+#	remotetimer
+#	podcast
+#	teletext
+#	permanentclock
+#	weatherplugin 
+#	weathercomponent
+#	weathercomponenthandler
 
-SUBDIRS += networkbrowser epgsearch
+
+SUBDIRS += networkbrowser epgsearch ardmediathek
 
 metadir = $(datadir)/meta
 meta_DATA = index-enigma2-plugins.xml

@@ -16,6 +16,7 @@ service nginx start
 
 echo "start Xvfb"
 test -z "$RESOLUTION" && RESOLUTION="1280x720x16"
+#test -z "$RESOLUTION" && RESOLUTION="1920x1080x16"
 Xvfb "$DISPLAY" -ac -screen 0 "$RESOLUTION" &
 xvfb_pid=$!
 echo "exec command $@"
