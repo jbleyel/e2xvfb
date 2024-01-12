@@ -129,7 +129,7 @@ RUN cp /usr/include/tirpc/netconfig.h /usr/include/
 # oe-alliance-plugins
 RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-plugins.git
 COPY Makefile-oe-alliance-plugins.am oe-alliance-plugins/Makefile.am
-COPY ax_python_devel.m4 enigma2-plugins/m4/ax_python_devel.m4
+COPY ax_python_devel.m4 oe-alliance-plugins/m4/ax_python_devel.m4
 RUN cd oe-alliance-plugins \
  && autoreconf -i \
  && ./configure --prefix=/usr \
