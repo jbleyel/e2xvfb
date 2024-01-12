@@ -91,6 +91,7 @@ RUN cd "opkg-$OPKG_VER" \
 
 
 RUN git clone --depth 1 https://github.com/openatv/enigma2.git
+COPY ax_python_devel.m4 /work/enigma2/m4/ax_python_devel.m4
 RUN cd enigma2 \
   && ./autogen.sh \
   && ./configure --with-libsdl --with-gstversion=1.0 --prefix=/usr --sysconfdir=/etc --with-boxtype=dm920 \
