@@ -33,7 +33,8 @@ to docker run command.
 
 # Environment
 * Ubuntu 22.04
-* openATV enigma2 branch 7.0
-* Python 3.10
+* openATV enigma2 branch master
+* Python 3.12
 * default and MetrixHD skin
+* several enigma2-plugins and oe-aliance-plugins
 
