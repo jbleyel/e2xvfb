@@ -32,7 +32,7 @@ To allow ssh you need to add:
 to docker run command.
 
 # Environment
-* Ubuntu 22.04
+* Ubuntu 24.04
 * openATV enigma2 branch master
 * Python 3.12
 * default and MetrixHD skin

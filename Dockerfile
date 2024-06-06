@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Berlin
@@ -12,7 +12,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa -y
 
 # build requirements
 RUN apt-get update && apt-get install -y \
-  git g++-12 build-essential autoconf autotools-dev gettext libtool libtool-bin unzip swig \
+  git g++-13 build-essential autoconf autotools-dev gettext libtool libtool-bin unzip swig \
   python3.12-dev \
   python3-twisted python3-usb python3-requests \
   libz-dev libssl-dev \
@@ -30,34 +30,14 @@ ENV LC_ALL en_US.UTF-8
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
 
-RUN wget https://bootstrap.pypa.io/get-pip.py
-RUN python get-pip.py
-
-RUN find / -name 'pip*'
-
-RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip3.12 1
-
 RUN rm /usr/bin/python3 && ln -sf /usr/bin/python3.12 /usr/bin/python3
 RUN rm /usr/bin/pygettext3 && ln -sf /usr/bin/pygettext3.12 /usr/bin/pygettext3
 RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.12 /usr/bin/pydoc3
-#RUN rm /usr/bin/python3-config && ln -sf /usr/bin/python3.12-config /usr/bin/python3-config
-#RUN rm /usr/bin/python3-config && ln -sf /usr/local/bin/pip3.12 /usr/bin/pip3
 
-#RUN pip3 install --upgrade pip
-RUN pip3 install setuptools
+RUN apt-get install -y python3-pip
 
-RUN pip3 install wifi
-RUN pip3 install Cheetah3
-RUN pip3 install pillow
-RUN pip3 install treq
-RUN pip3 install future
-RUN pip3 install netifaces  
-RUN pip3 install cffi
-RUN pip3 install puremagic
-RUN pip3 install tmdbsimple
-RUN pip3 install tvdbsimple
-#RUN pip3 install sqlite
-#RUN pip3 install scalene
+RUN pip3 install wifi Cheetah3 pillow treq future netifaces cffi puremagic tmdbsimple tvdbsimple tinytag  --break-system-packages
+RUN pip3 install scalene mutagen --break-system-packages
 
 WORKDIR /work
 
@@ -81,7 +61,7 @@ RUN cd tuxtxt/tuxtxt \
   && make \
   && make install
 
-ARG OPKG_VER="0.6.1"
+ARG OPKG_VER="0.6.3"
 RUN curl -L "http://downloads.yoctoproject.org/releases/opkg/opkg-$OPKG_VER.tar.gz" -o opkg.tar.gz
 RUN tar -xzf opkg.tar.gz
 RUN cd "opkg-$OPKG_VER" \
@@ -171,15 +151,15 @@ COPY process.py /usr/lib/python3.12/site-packages/process.py
 
 
 # OPKG
-RUN mkdir -p /etc/opkg && mkdir -p /var/lib/opkg/lists && mkdir -p /var/lib/opkg/info
-RUN echo "dest root /" > /etc/opkg/opkg.conf
-RUN echo "option lists_dir /var/lib/opkg/lists" >> /etc/opkg/opkg.conf
-RUN echo "option status_file /var/lib/opkg/status" >> /etc/opkg/opkg.conf
-RUN echo "arch all 1" > /etc/opkg/arch.conf
-RUN echo "arch any 6" >> /etc/opkg/arch.conf
-RUN echo "arch noarch 11" >> /etc/opkg/arch.conf
-RUN echo "src/gz openatv-all http://feeds2.mynonpublic.com/7.4/vusolo4k/all" >> /etc/opkg/all-feed.conf
-RUN echo "src/gz oe-alliance-settings-feed https://raw.githubusercontent.com/oe-alliance/oe-alliance-settings-feed/master/feed" >> /etc/opkg/oe-alliance-settings-feed.conf
+RUN mkdir -p /etc/opkg && mkdir -p /var/lib/opkg/lists && mkdir -p /var/lib/opkg/info \
+  && echo "dest root /" > /etc/opkg/opkg.conf \
+  && echo "option lists_dir /var/lib/opkg/lists" >> /etc/opkg/opkg.conf \
+  && echo "option status_file /var/lib/opkg/status" >> /etc/opkg/opkg.conf \
+  && echo "arch all 1" > /etc/opkg/arch.conf \
+  && echo "arch any 6" >> /etc/opkg/arch.conf \
+  && echo "arch noarch 11" >> /etc/opkg/arch.conf \
+  && echo "src/gz openatv-all http://feeds2.mynonpublic.com/7.4/vusolo4k/all" >> /etc/opkg/all-feed.conf \
+  && echo "src/gz oe-alliance-settings-feed https://raw.githubusercontent.com/oe-alliance/oe-alliance-settings-feed/master/feed" >> /etc/opkg/oe-alliance-settings-feed.conf
 
 COPY opkg.py /work/opkg.py
 RUN python opkg.py
@@ -190,13 +170,13 @@ RUN if [ -f /usr/lib/aarch64-linux-gnu/libc.so.6 ]; then ln -snf /usr/lib/aarch6
 RUN rm -rf /work/*
 
 # SSH
-RUN mkdir /var/run/sshd
-RUN echo 'root:docker' | chpasswd
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
-RUN echo 'export NOTVISIBLE="in users profile"' >> ~/.bashrc
-RUN echo "export VISIBLE=now" >> /etc/profile
-RUN bash -c 'install -m755 <(printf "#!/bin/sh\nexit 0") /usr/sbin/policy-rc.d'
+RUN mkdir /var/run/sshd \
+  && echo 'root:docker' | chpasswd \
+  && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config \
+  && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd \
+  && echo 'export NOTVISIBLE="in users profile"' >> ~/.bashrc \
+  && echo "export VISIBLE=now" >> /etc/profile \
+  && bash -c 'install -m755 <(printf "#!/bin/sh\nexit 0") /usr/sbin/policy-rc.d'
 
 # FTP
 COPY vsftpd.conf /etc/
