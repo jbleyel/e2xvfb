@@ -12,15 +12,15 @@ RUN add-apt-repository ppa:deadsnakes/ppa -y
 
 # build requirements
 RUN apt-get update && apt-get install -y \
-  git g++-13 build-essential autoconf autotools-dev gettext libtool libtool-bin unzip swig \
+  git g++-14 build-essential autoconf autotools-dev gettext libtool libtool-bin unzip swig \
   python3.12-dev \
   python3-twisted python3-usb python3-requests \
   libz-dev libssl-dev \
-  libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libsigc++-2.0-dev \
+  libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libsigc++-3.0-dev \
   libfreetype6-dev libfribidi-dev \
   libavahi-client-dev libjpeg-dev libgif-dev libsdl2-dev libxml2-dev \
   libarchive-dev libcurl4-openssl-dev libgpgme11-dev libntirpc-dev \
-  x11vnc xvfb xdotool nginx openssh-server curl vsftpd nano locales iputils-ping net-tools gdb valgrind libsqlite3-dev
+  x11vnc xvfb xdotool nginx openssh-server curl vsftpd nano locales iputils-ping net-tools gdb valgrind libsqlite3-dev libuchardet-dev
 
 
 RUN locale-gen en_US.UTF-8
@@ -36,8 +36,8 @@ RUN rm /usr/bin/pydoc3 && ln -sf /usr/bin/pydoc3.12 /usr/bin/pydoc3
 
 RUN apt-get install -y python3-pip
 
-RUN pip3 install wifi Cheetah3 pillow treq future netifaces cffi puremagic tmdbsimple tvdbsimple tinytag  --break-system-packages
-RUN pip3 install scalene mutagen --break-system-packages
+RUN pip3 install wifi CT3 pillow treq future netifaces cffi puremagic tmdbsimple tvdbsimple tinytag  --break-system-packages
+RUN pip3 install mutagen --break-system-packages
 
 WORKDIR /work
 
@@ -48,7 +48,7 @@ RUN cd libdvbsi \
   && make \
   && make install
 
-RUN git clone --depth 1 https://github.com/OpenPLi/tuxtxt.git
+RUN git clone --depth 1 https://github.com/oe-alliance/tuxtxt.git
 RUN cd tuxtxt/libtuxtxt \
   && autoreconf -i \
   && CPP="gcc -E -P" ./configure --with-boxtype=generic --prefix=/usr \
@@ -61,7 +61,7 @@ RUN cd tuxtxt/tuxtxt \
   && make \
   && make install
 
-ARG OPKG_VER="0.6.3"
+ARG OPKG_VER="0.7.0"
 RUN curl -L "http://downloads.yoctoproject.org/releases/opkg/opkg-$OPKG_VER.tar.gz" -o opkg.tar.gz
 RUN tar -xzf opkg.tar.gz
 RUN cd "opkg-$OPKG_VER" \
@@ -73,6 +73,8 @@ RUN cd "opkg-$OPKG_VER" \
 RUN git clone --depth 1 https://github.com/openatv/enigma2.git
 COPY ax_python_devel.m4 /work/enigma2/m4/ax_python_devel.m4
 RUN cd enigma2 \
+  && sed -i "s/sigc++-2.0/sigc++-3.0/g" ./configure.ac \
+  && sed -i "s/sigc++-2.0/sigc++-3.0/g" ./enigma2.pc.in \
   && ./autogen.sh \
   && ./configure --with-libsdl --with-gstversion=1.0 --prefix=/usr --sysconfdir=/etc --with-boxtype=dm920 \
   && make -j4 \
