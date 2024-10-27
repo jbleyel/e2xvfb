@@ -85,7 +85,8 @@ SUBDIRS = \
 #	weathercomponenthandler
 
 
-SUBDIRS += networkbrowser epgsearch ardmediathek
+#SUBDIRS += networkbrowser epgsearch ardmediathek
+SUBDIRS += epgsearch ardmediathek
 
 metadir = $(datadir)/meta
 meta_DATA = index-enigma2-plugins.xml

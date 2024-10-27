@@ -89,12 +89,14 @@ RUN cd branding-module \
   && make \
   && make install
 
-RUN git clone --depth 1 https://github.com/openatv/MetrixHD.git -b master
-RUN cd MetrixHD && cp -arv usr /
-
+    
 #default skin
 RUN git clone --depth 1 https://github.com/openatv/oe-alliance-e2-skindefault.git
 RUN cd oe-alliance-e2-skindefault && cp -arv fonts /usr/share/ && cp -arv skin_default /usr/share/enigma2/ && cp skin*.xml /usr/share/enigma2/ && cp prev.png /usr/share/enigma2/
+
+#metrix
+RUN git clone --depth 1 https://github.com/openatv/MetrixHD.git -b master
+RUN cd MetrixHD && cp -arv usr /
 
 #overlayhd
 RUN git clone --depth 1 https://github.com/IanSav/OverlayHD.git
@@ -103,10 +105,6 @@ RUN cd OverlayHD && cp -arv usr /
 RUN git clone --depth 1 https://github.com/openatv/WeatherInfo.git
 RUN cd WeatherInfo && cp Weatherinfo.py /usr/lib/enigma2/python/Tools/
 
-
-# rpc error
-RUN cp /usr/include/tirpc/rpc/* /usr/include/rpc/
-RUN cp /usr/include/tirpc/netconfig.h /usr/include/
 
 # oe-alliance-plugins
 RUN git clone --depth 1 https://github.com/oe-alliance/oe-alliance-plugins.git
